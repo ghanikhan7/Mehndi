@@ -1,0 +1,2337 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mini CMS Dashboard | Alfiya Tamboli – The Mehendi Artist</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" type="image/png" href="/images/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f8f3e9;
+      --bg-alt: #efe5d4;
+      --paper: #fffdf8;
+      --ink: #211914;
+      --muted: #6e5f53;
+      --gold: #c9a45d;
+      --gold-deep: #9c7538;
+      --wine: #542b24;
+      --wine-hover: #361a15;
+      --dark: #17120f;
+      --line: rgba(84, 43, 36, 0.16);
+      --serif: 'Playfair Display', Georgia, serif;
+      --sans: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --sidebar-w: 265px;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--sans);
+      line-height: 1.55;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    button, input, select, textarea {
+      font: inherit;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    /* Layout Shell */
+    .cms-shell {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--dark);
+      color: #f4e6c6;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 50;
+      border-right: 1px solid rgba(201, 164, 93, 0.3);
+      transition: transform 0.25s ease;
+    }
+
+    .sidebar-brand {
+      padding: 22px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .sidebar-brand img {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      border: 1.5px solid var(--gold);
+      object-fit: cover;
+      background: #050505;
+      flex-shrink: 0;
+    }
+
+    .sidebar-brand strong {
+      display: block;
+      font: 600 17px/1.2 var(--serif);
+      color: #fff8ec;
+    }
+
+    .sidebar-brand small {
+      display: block;
+      font-size: 9.5px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-top: 2px;
+    }
+
+    .sidebar-nav {
+      padding: 16px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .nav-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 12px 14px;
+      background: transparent;
+      border: 1px solid transparent;
+      color: #d8c9b6;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-align: left;
+      cursor: pointer;
+      transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    }
+
+    .nav-btn:hover {
+      background: rgba(201, 164, 93, 0.12);
+      color: #fff8ec;
+    }
+
+    .nav-btn.active {
+      background: var(--wine);
+      border-color: var(--gold);
+      color: #fff8ec;
+      font-weight: 600;
+    }
+
+    .nav-badge {
+      padding: 2px 8px;
+      border-radius: 20px;
+      background: var(--gold);
+      color: #17120f;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .sidebar-foot {
+      padding: 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      display: grid;
+      gap: 8px;
+    }
+
+    .sidebar-link {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 10px 12px;
+      border: 1px solid rgba(201, 164, 93, 0.45);
+      color: #f4e6c6;
+      font-size: 11.5px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      text-align: center;
+      transition: background 0.2s ease;
+    }
+
+    .sidebar-link:hover {
+      background: rgba(201, 164, 93, 0.18);
+    }
+
+    .logout-btn {
+      width: 100%;
+      padding: 10px 12px;
+      background: rgba(180, 35, 24, 0.22);
+      border: 1px solid rgba(240, 68, 56, 0.45);
+      color: #fecdd3;
+      font-size: 11.5px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+
+    .logout-btn:hover {
+      background: #912018;
+      color: #ffffff;
+    }
+
+    /* Main Content Area */
+    .cms-main {
+      flex: 1;
+      margin-left: var(--sidebar-w);
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top Header */
+    .cms-header {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background: rgba(248, 243, 233, 0.96);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--line);
+      padding: 14px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .mobile-menu-btn {
+      display: none;
+      width: 42px;
+      height: 42px;
+      background: var(--paper);
+      border: 1px solid #d8c6a6;
+      color: var(--wine);
+      font-size: 20px;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .cms-header h1 {
+      font: 500 clamp(22px, 2.6vw, 28px)/1.2 var(--serif);
+      margin: 0;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .storage-pill {
+      font-size: 11px;
+      padding: 5px 10px;
+      background: rgba(201, 164, 93, 0.18);
+      border: 1px solid rgba(201, 164, 93, 0.5);
+      color: var(--ink);
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+
+    .cms-body {
+      padding: 28px;
+      max-width: 1320px;
+      width: 100%;
+    }
+
+    /* Views */
+    .cms-view {
+      display: none;
+    }
+
+    .cms-view.active {
+      display: block;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 42px;
+      padding: 10px 18px;
+      background: var(--wine);
+      color: #fff8ec;
+      border: 1px solid var(--wine);
+      font-size: 11.5px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .btn:hover:not(:disabled) {
+      background: var(--wine-hover);
+      border-color: var(--wine-hover);
+    }
+
+    .btn.outline {
+      background: var(--paper);
+      color: var(--wine);
+      border-color: #cbbba4;
+    }
+
+    .btn.outline:hover {
+      border-color: var(--wine);
+      background: #f5ede0;
+    }
+
+    .btn.gold {
+      background: var(--gold);
+      border-color: var(--gold);
+      color: #17120f;
+    }
+
+    .btn.danger {
+      background: #fff5f5;
+      color: #b42318;
+      border-color: #fecdca;
+    }
+
+    .btn.danger:hover {
+      background: #b42318;
+      color: #ffffff;
+      border-color: #b42318;
+    }
+
+    .btn.sm {
+      min-height: 34px;
+      padding: 6px 11px;
+      font-size: 10.5px;
+      letter-spacing: 0.08em;
+    }
+
+    /* Dashboard Stat Cards */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .stat-card {
+      background: var(--paper);
+      border: 1px solid #d9c7a6;
+      border-top: 3px solid var(--gold);
+      padding: 20px 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .stat-card.highlight {
+      border-top-color: var(--wine);
+      background: #fffaf0;
+    }
+
+    .stat-label {
+      font-size: 10.5px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .stat-value {
+      font: 600 36px/1.1 var(--serif);
+      color: var(--wine);
+      margin: 10px 0 6px;
+    }
+
+    .stat-sub {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* Section Panels & Cards */
+    .panel {
+      background: var(--paper);
+      border: 1px solid #d9c7a6;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+
+    .panel-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .panel-head h2 {
+      font: 500 23px/1.2 var(--serif);
+      margin: 0;
+    }
+
+    .panel-head p {
+      margin: 4px 0 0;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    /* Forms */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .form-grid .full {
+      grid-column: 1 / -1;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .field label {
+      font-size: 11.5px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--ink);
+    }
+
+    .field input[type="text"],
+    .field input[type="number"],
+    .field input[type="url"],
+    .field input[type="date"],
+    .field select,
+    .field textarea {
+      width: 100%;
+      min-height: 44px;
+      padding: 10px 12px;
+      border: 1px solid #cbbba4;
+      background: #fffdf8;
+      color: var(--ink);
+      font-size: 14px;
+      outline: none;
+    }
+
+    .field textarea {
+      min-height: 86px;
+      resize: vertical;
+    }
+
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      border-color: var(--wine);
+    }
+
+    .checkbox-row {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13.5px;
+      font-weight: 500;
+      cursor: pointer;
+      margin-top: 6px;
+    }
+
+    .checkbox-row input {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--wine);
+    }
+
+    /* Category Admin List */
+    .admin-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .admin-item-card {
+      background: #fdf9f0;
+      border: 1px solid #d9c7a6;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .admin-item-card.disabled-item {
+      opacity: 0.65;
+      background: #f2ece1;
+    }
+
+    .item-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .item-title {
+      font: 600 20px/1.25 var(--serif);
+      margin: 4px 0 6px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 8px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border: 1px solid transparent;
+    }
+
+    .badge.enabled,
+    .badge.status-Confirmed,
+    .badge.status-Completed {
+      background: #ecfdf3;
+      color: #067647;
+      border-color: #abefc6;
+    }
+
+    .badge.disabled,
+    .badge.status-Cancelled {
+      background: #fef3f2;
+      color: #b42318;
+      border-color: #fecdca;
+    }
+
+    .badge.status-New {
+      background: #fff8eb;
+      color: #b54708;
+      border-color: #fedf89;
+    }
+
+    .badge.status-Contacted {
+      background: #eff8ff;
+      color: #175cd3;
+      border-color: #b2ddff;
+    }
+
+    .thumb-strip {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .thumb-box {
+      background: #e9dfd1;
+      border: 1px solid #d9c7a6;
+      overflow: hidden;
+    }
+
+    .thumb-box img {
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      object-fit: cover;
+      display: block;
+    }
+
+    .thumb-box span {
+      display: block;
+      font-size: 10px;
+      padding: 4px;
+      text-align: center;
+      background: var(--dark);
+      color: #fff4df;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .item-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+      padding-top: 10px;
+      border-top: 1px solid rgba(84, 43, 36, 0.12);
+    }
+
+    /* Gallery Admin Grid */
+    .gallery-admin-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .gal-card {
+      background: #fdf9f0;
+      border: 1px solid #d9c7a6;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .gal-card-media {
+      position: relative;
+      aspect-ratio: 4 / 3.6;
+      background: #e6dac8;
+      overflow: hidden;
+    }
+
+    .gal-card-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .gal-featured-tag {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      padding: 4px 8px;
+      background: var(--dark);
+      color: var(--gold);
+      border: 1px solid var(--gold);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .gal-card-body {
+      padding: 14px;
+      display: grid;
+      gap: 6px;
+    }
+
+    .gal-card-body h3 {
+      font: 600 18px/1.25 var(--serif);
+      margin: 0;
+    }
+
+    .gal-card-body p {
+      font-size: 12.5px;
+      color: var(--muted);
+      margin: 0;
+    }
+
+    /* Upload Staging List */
+    .staging-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .staging-item {
+      display: grid;
+      grid-template-columns: 100px 1fr;
+      gap: 12px;
+      padding: 12px;
+      background: #f8f3e9;
+      border: 1px solid #d9c7a6;
+      align-items: start;
+    }
+
+    .staging-item img {
+      width: 100px;
+      height: 110px;
+      object-fit: cover;
+      border: 1px solid var(--gold);
+    }
+
+    /* Enquiries Table */
+    .filter-bar {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+
+    .filter-bar input {
+      flex: 1;
+      min-width: 220px;
+      min-height: 42px;
+      padding: 8px 12px;
+      border: 1px solid #cbbba4;
+      background: #fffdf8;
+    }
+
+    .filter-bar select {
+      min-width: 180px;
+      min-height: 42px;
+      padding: 8px 12px;
+      border: 1px solid #cbbba4;
+      background: #fffdf8;
+    }
+
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.5px;
+    }
+
+    th, td {
+      padding: 12px 10px;
+      text-align: left;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+    }
+
+    th {
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      background: #f5ede0;
+    }
+
+    /* Category Images Editor Rows */
+    .cat-img-rows {
+      display: grid;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .cat-img-row {
+      display: grid;
+      grid-template-columns: 64px 1fr 1fr auto;
+      gap: 10px;
+      align-items: center;
+      padding: 10px;
+      background: #f8f3e9;
+      border: 1px solid #d9c7a6;
+    }
+
+    .cat-img-row img {
+      width: 64px;
+      height: 76px;
+      object-fit: cover;
+      background: #e6dac8;
+      border: 1px solid #cbbba4;
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 22px;
+      right: 22px;
+      z-index: 90;
+      padding: 14px 20px;
+      background: var(--dark);
+      color: #f4e6c6;
+      border-left: 4px solid var(--gold);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.28);
+      font-size: 13.5px;
+      display: none;
+      max-width: 380px;
+    }
+
+    .toast.show {
+      display: block;
+    }
+
+    /* Modal Dialog */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 80;
+      background: rgba(15, 11, 9, 0.72);
+      place-items: center;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .modal-backdrop.open {
+      display: grid;
+    }
+
+    .modal-box {
+      background: var(--paper);
+      border: 1px solid var(--gold);
+      width: min(680px, 100%);
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 26px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+    }
+
+    .sidebar-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.55);
+      z-index: 45;
+    }
+
+    /* Responsive Breakpoints */
+    @media (max-width: 1120px) {
+      .stats-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+      .gallery-admin-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 920px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      .sidebar-backdrop.open {
+        display: block;
+      }
+      .cms-main {
+        margin-left: 0;
+      }
+      .mobile-menu-btn {
+        display: inline-flex;
+      }
+      .cms-header {
+        padding: 12px 18px;
+      }
+      .cms-body {
+        padding: 18px;
+      }
+      .admin-cards-grid,
+      .staging-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .stats-grid,
+      .gallery-admin-grid,
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+      .cat-img-row {
+        grid-template-columns: 1fr;
+      }
+      .panel {
+        padding: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="cms-shell">
+    <!-- Mobile Drawer Backdrop -->
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar" aria-label="Admin Navigation">
+      <div>
+        <div class="sidebar-brand">
+          <img src="/images/logo.png" alt="Alfiya Tamboli Logo">
+          <div>
+            <strong>Alfiya Tamboli</strong>
+            <small>Mini CMS Admin</small>
+          </div>
+        </div>
+
+        <nav class="sidebar-nav">
+          <button class="nav-btn active" type="button" data-view="dashboard">
+            <span>Dashboard</span>
+          </button>
+          <button class="nav-btn" type="button" data-view="categories">
+            <span>Categories</span>
+            <span class="nav-badge" id="navCatCount">7</span>
+          </button>
+          <button class="nav-btn" type="button" data-view="gallery">
+            <span>Gallery</span>
+            <span class="nav-badge" id="navGalCount">5</span>
+          </button>
+          <button class="nav-btn" type="button" data-view="services">
+            <span>Services &amp; Pricing</span>
+          </button>
+          <button class="nav-btn" type="button" data-view="enquiries">
+            <span>Booking Enquiries</span>
+            <span class="nav-badge" id="navEnqBadge">0</span>
+          </button>
+          <button class="nav-btn" type="button" data-view="settings">
+            <span>Website Settings</span>
+          </button>
+        </nav>
+      </div>
+
+      <div class="sidebar-foot">
+        <a class="sidebar-link" href="/" target="_blank" rel="noopener">View Live Website ↗</a>
+        <button class="logout-btn" id="logoutBtn" type="button">Log Out</button>
+      </div>
+    </aside>
+
+    <!-- Main Area -->
+    <div class="cms-main">
+      <header class="cms-header">
+        <div class="header-left">
+          <button class="mobile-menu-btn" id="mobileMenuBtn" type="button" aria-label="Toggle admin sidebar">☰</button>
+          <h1 id="viewTitle">Dashboard Overview</h1>
+        </div>
+        <div class="header-right">
+          <span class="storage-pill" id="storageBadge">Storage: Persistent</span>
+          <a class="btn outline sm" href="/" target="_blank" rel="noopener">Open Website ↗</a>
+        </div>
+      </header>
+
+      <main class="cms-body">
+        <!-- ================================================================
+             VIEW 1: DASHBOARD
+             ================================================================ -->
+        <section class="cms-view active" id="view-dashboard">
+          <div class="stats-grid">
+            <div class="stat-card">
+              <span class="stat-label">Total Categories</span>
+              <div class="stat-value" id="statCategories">7</div>
+              <span class="stat-sub" id="statCategoriesSub">7 active on website</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">Portfolio Images</span>
+              <div class="stat-value" id="statGallery">5</div>
+              <span class="stat-sub" id="statGallerySub">5 featured designs</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">Total Services</span>
+              <div class="stat-value" id="statServices">4</div>
+              <span class="stat-sub" id="statServicesSub">4 active packages</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">Booking Enquiries</span>
+              <div class="stat-value" id="statEnquiries">0</div>
+              <span class="stat-sub">Saved in database</span>
+            </div>
+            <div class="stat-card highlight">
+              <span class="stat-label">New Enquiries</span>
+              <div class="stat-value" id="statNewEnquiries">0</div>
+              <span class="stat-sub">Awaiting response</span>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <div>
+                <h2>Recent Booking Enquiries</h2>
+                <p>Latest customer enquiries submitted from the website booking form.</p>
+              </div>
+              <button class="btn outline sm" type="button" data-jump="enquiries">Manage All Enquiries →</button>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Customer</th>
+                    <th>Phone</th>
+                    <th>Event Date</th>
+                    <th>Service</th>
+                    <th>Location</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="recentEnquiriesBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <div>
+                <h2>Quick Actions</h2>
+                <p>Jump directly to any section of your website content manager.</p>
+              </div>
+            </div>
+            <div style="display:flex;gap:12px;flex-wrap:wrap">
+              <button class="btn" type="button" data-jump="categories">+ Manage 7 Mehendi Categories</button>
+              <button class="btn outline" type="button" data-jump="gallery">+ Upload Portfolio Images</button>
+              <button class="btn outline" type="button" data-jump="services">Edit Services &amp; Pricing</button>
+              <button class="btn outline" type="button" data-jump="settings">Update WhatsApp &amp; Settings</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================================================================
+             VIEW 2: CATEGORIES MANAGEMENT
+             ================================================================ -->
+        <section class="cms-view" id="view-categories">
+          <div class="panel">
+            <div class="panel-head">
+              <div>
+                <h2 id="catFormTitle">Add New Mehendi Category</h2>
+                <p>Create or edit a mehendi style category with multiple hand and feet reference images.</p>
+              </div>
+              <button class="btn outline sm" id="resetCatFormBtn" type="button" style="display:none">Cancel Edit</button>
+            </div>
+
+            <form id="categoryForm">
+              <input type="hidden" id="catId">
+              <div class="form-grid">
+                <div class="field">
+                  <label for="catName">Category Name *</label>
+                  <input id="catName" type="text" placeholder="e.g. Traditional Indian Mehndi" required>
+                </div>
+
+                <div class="field">
+                  <label for="catOrder">Display Order *</label>
+                  <input id="catOrder" type="number" min="1" value="8" required>
+                </div>
+
+                <div class="field full">
+                  <label for="catDesc">Category Description *</label>
+                  <textarea id="catDesc" placeholder="Describe the motifs, coverage and occasion suitability..." required></textarea>
+                </div>
+
+                <div class="field">
+                  <label for="catFootNote">Coverage Tag (Hands / Feet)</label>
+                  <input id="catFootNote" type="text" value="Hands & feet" placeholder="e.g. Hands & feet">
+                </div>
+
+                <div class="field" style="justify-content:center">
+                  <label class="checkbox-row">
+                    <input id="catEnabled" type="checkbox" checked>
+                    <span>Enable this category on the public website</span>
+                  </label>
+                </div>
+
+                <div class="field full">
+                  <label>Category Reference Images (Upload from device or add image URL)</label>
+                  <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:8px">
+                    <label class="btn outline sm" style="cursor:pointer">
+                      <span>+ Upload Image File(s)</span>
+                      <input id="catUploadInput" type="file" accept="image/jpeg,image/png,image/webp" multiple style="display:none">
+                    </label>
+                    <button class="btn outline sm" id="addCatImgRowBtn" type="button">+ Add Image URL Slot</button>
+                  </div>
+                  <div class="cat-img-rows" id="catImgRows"></div>
+                </div>
+              </div>
+
+              <div style="margin-top:18px;display:flex;gap:12px">
+                <button class="btn" id="saveCatBtn" type="submit">Save Category</button>
+              </div>
+            </form>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <div>
+                <h2>Existing Mehendi Categories</h2>
+                <p>Reorder, edit, enable/disable or delete categories. All 7 signature categories are preserved.</p>
+              </div>
+            </div>
+            <div class="admin-cards-grid" id="categoriesList"></div>
+          </div>
+        </section>
+
+        <!-- ================================================================
+             VIEW 3: GALLERY MANAGEMENT
+             ================================================================ -->
+        <section class="cms-view" id="view-gallery">
+          <div class="panel">
+            <div class="panel-head">
+              <div>
+                <h2>Upload New Portfolio Images</h2>
+                <p>Select one or multiple photographs from your device. Images are automatically optimized and stored persistently.</p>
+              </div>
+            </div>
+
+            <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+              <label class="btn gold" style="cursor:pointer">
+                <span>+ Select Photographs to Upload</span>
+                <input id="galleryFileInput" type="file" accept="image/jpeg,image/png,image/webp" multiple style="display:none">
+              </label>
+              <span style="font-size:12.5px;color:var(--muted)">Allowed formats: JPG, PNG, WebP (Max 4 MB per photo)</span>
+            </div>
+
+            <div id="galleryStagingArea" style="display:none;margin-top:18px">
+              <h3 style="font:600 18px var(--serif);margin:0 0 10px">Preview &amp; Details Before Saving</h3>
+              <div class="staging-grid" id="galleryStagingGrid"></div>
+              <div style="margin-top:16px;display:flex;gap:12px">
+                <button class="btn" id="confirmGalleryUploadBtn" type="button">Upload &amp; Save to Portfolio</button>
+                <button class="btn outline" id="clearGalleryStagingBtn" type="button">Clear Selection</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <div>
+                <h2>Alfiya’s Portfolio Gallery</h2>
+                <p>Manage titles, category assignments, descriptions, display order and featured status.</p>
+              </div>
+            </div>
+            <div class="gallery-admin-grid" id="galleryAdminGrid"></div>
+          </div>
+        </section>
+
+        <!-- ================================================================
+             VIEW 4: SERVICES & PRICING
+             ================================================================ -->
+        <section class="cms-view" id="view-services">
+          <div class="panel">
+            <div class="panel-head">
+              <div>
+                <h2 id="srvFormTitle">Add / Edit Service Package</h2>
+                <p>Keep pricing marked as demo values until Alfiya confirms her official rate card.</p>
+              </div>
+              <button class="btn outline sm" id="resetSrvFormBtn" type="button" style="display:none">Cancel Edit</button>
+            </div>
+
+            <form id="serviceForm">
+              <input type="hidden" id="srvId">
+              <div class="form-grid">
+                <div class="field">
+                  <label for="srvName">Service Name *</label>
+                  <input id="srvName" type="text" placeholder="e.g. Royal Bridal Mehendi (Hands & Feet)" required>
+                </div>
+
+                <div class="field">
+                  <label for="srvPrice">Starting Price *</label>
+                  <input id="srvPrice" type="text" placeholder="e.g. ₹3,500 onwards (Demo – Confirm with Artist)" required>
+                </div>
+
+                <div class="field full">
+                  <label for="srvDesc">Service Description *</label>
+                  <textarea id="srvDesc" placeholder="Describe what is included in this service..." required></textarea>
+                </div>
+
+                <div class="field">
+                  <label for="srvOrder">Display Order</label>
+                  <input id="srvOrder" type="number" min="1" value="5">
+                </div>
+
+                <div class="field" style="justify-content:center;gap:8px">
+                  <label class="checkbox-row">
+                    <input id="srvDemo" type="checkbox" checked>
+                    <span>Mark as Demo / Sample Price (To Be Confirmed)</span>
+                  </label>
+                  <label class="checkbox-row">
+                    <input id="srvEnabled" type="checkbox" checked>
+                    <span>Enable this service on the website</span>
+                  </label>
+                </div>
+              </div>
+
+              <div style="margin-top:16px">
+                <button class="btn" id="saveSrvBtn" type="submit">Save Service</button>
+              </div>
+            </form>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <div>
+                <h2>Configured Services &amp; Starting Packages</h2>
+                <p>These services appear on the public website and in the booking form dropdown.</p>
+              </div>
+            </div>
+            <div class="admin-cards-grid" id="servicesList"></div>
+          </div>
+        </section>
+
+        <!-- ================================================================
+             VIEW 5: BOOKING ENQUIRIES
+             ================================================================ -->
+        <section class="cms-view" id="view-enquiries">
+          <div class="panel">
+            <div class="panel-head">
+              <div>
+                <h2>Customer Booking Enquiries</h2>
+                <p>All website booking form submissions are saved here before opening WhatsApp.</p>
+              </div>
+            </div>
+
+            <div class="filter-bar">
+              <input id="enqSearchInput" type="text" placeholder="Search by customer name, phone, location, service or message...">
+              <select id="enqStatusFilter" aria-label="Filter enquiries by status">
+                <option value="ALL">All Statuses</option>
+                <option value="New">New</option>
+                <option value="Contacted">Contacted</option>
+                <option value="Confirmed">Confirmed</option>
+                <option value="Completed">Completed</option>
+                <option value="Cancelled">Cancelled</option>
+              </select>
+            </div>
+
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Submitted</th>
+                    <th>Customer &amp; Phone</th>
+                    <th>Event Date</th>
+                    <th>Service &amp; Location</th>
+                    <th>Message</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="enquiriesTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================================================================
+             VIEW 6: WEBSITE SETTINGS
+             ================================================================ -->
+        <section class="cms-view" id="view-settings">
+          <div class="panel">
+            <div class="panel-head">
+              <div>
+                <h2>Website &amp; Artist Settings</h2>
+                <p>Update artist details, WhatsApp booking number, Instagram link, location and About section.</p>
+              </div>
+            </div>
+
+            <form id="settingsForm">
+              <div class="form-grid">
+                <div class="field">
+                  <label for="setArtistName">Artist Name *</label>
+                  <input id="setArtistName" type="text" required>
+                </div>
+
+                <div class="field">
+                  <label for="setTagline">Brand Subtitle / Tagline</label>
+                  <input id="setTagline" type="text">
+                </div>
+
+                <div class="field">
+                  <label for="setWhatsappNum">WhatsApp Number (Digits with Country Code) *</label>
+                  <input id="setWhatsappNum" type="text" placeholder="917057703257" required>
+                </div>
+
+                <div class="field">
+                  <label for="setWhatsappDisplay">WhatsApp Display Text</label>
+                  <input id="setWhatsappDisplay" type="text" placeholder="+91 70577 03257">
+                </div>
+
+                <div class="field">
+                  <label for="setInstaUrl">Instagram Profile URL</label>
+                  <input id="setInstaUrl" type="url">
+                </div>
+
+                <div class="field">
+                  <label for="setInstaHandle">Instagram Handle</label>
+                  <input id="setInstaHandle" type="text" placeholder="@aurangabad_mehendi_by_alfiya">
+                </div>
+
+                <div class="field">
+                  <label for="setLocation">Primary Location</label>
+                  <input id="setLocation" type="text" placeholder="Aurangabad, Maharashtra">
+                </div>
+
+                <div class="field">
+                  <label for="setExpYears">Experience Badge</label>
+                  <input id="setExpYears" type="text" placeholder="5+">
+                </div>
+
+                <div class="field full">
+                  <label for="setTopline">Top Announcement Bar Text</label>
+                  <input id="setTopline" type="text">
+                </div>
+
+                <div class="field full">
+                  <label for="setHeroSubtitle">Hero Section Introduction</label>
+                  <textarea id="setHeroSubtitle"></textarea>
+                </div>
+
+                <div class="field full">
+                  <label for="setAboutHeading">About Section Heading</label>
+                  <input id="setAboutHeading" type="text">
+                </div>
+
+                <div class="field full">
+                  <label for="setAboutP1">About Paragraph 1</label>
+                  <textarea id="setAboutP1"></textarea>
+                </div>
+
+                <div class="field full">
+                  <label for="setAboutP2">About Paragraph 2</label>
+                  <textarea id="setAboutP2"></textarea>
+                </div>
+
+                <div class="field full">
+                  <label for="setContactNote">Contact &amp; Travel Availability Note</label>
+                  <input id="setContactNote" type="text">
+                </div>
+              </div>
+
+              <div style="margin-top:20px">
+                <button class="btn" id="saveSettingsBtn" type="submit">Save Website Settings</button>
+              </div>
+            </form>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- Edit Gallery Image Modal -->
+  <div class="modal-backdrop" id="editGalleryModal" role="dialog" aria-modal="true" aria-labelledby="editGalTitle">
+    <div class="modal-box">
+      <div class="panel-head">
+        <h2 id="editGalTitle">Edit Portfolio Image</h2>
+        <button class="btn outline sm" id="closeGalModalBtn" type="button">Close ✕</button>
+      </div>
+      <form id="editGalleryForm">
+        <input type="hidden" id="editGalId">
+        <div class="form-grid">
+          <div class="field">
+            <label for="editGalTitleInput">Image Title *</label>
+            <input id="editGalTitleInput" type="text" required>
+          </div>
+          <div class="field">
+            <label for="editGalCategoryInput">Assigned Category</label>
+            <select id="editGalCategoryInput"></select>
+          </div>
+          <div class="field full">
+            <label for="editGalDescInput">Description / Alt Text *</label>
+            <textarea id="editGalDescInput" required></textarea>
+          </div>
+          <div class="field">
+            <label for="editGalOrderInput">Display Order</label>
+            <input id="editGalOrderInput" type="number" min="1" required>
+          </div>
+          <div class="field" style="justify-content:center">
+            <label class="checkbox-row">
+              <input id="editGalFeaturedInput" type="checkbox">
+              <span>Mark as Featured Portfolio Image</span>
+            </label>
+          </div>
+        </div>
+        <div style="margin-top:18px;display:flex;gap:12px">
+          <button class="btn" type="submit">Update Image Details</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- View Enquiry Details Modal -->
+  <div class="modal-backdrop" id="viewEnquiryModal" role="dialog" aria-modal="true" aria-labelledby="viewEnqTitle">
+    <div class="modal-box">
+      <div class="panel-head">
+        <h2 id="viewEnqTitle">Booking Enquiry Details</h2>
+        <button class="btn outline sm" id="closeEnqModalBtn" type="button">Close ✕</button>
+      </div>
+      <div id="viewEnqContent" style="display:grid;gap:10px;font-size:14px"></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    (function () {
+      let state = {
+        stats: {},
+        settings: {},
+        categories: [],
+        gallery: [],
+        services: [],
+        enquiries: []
+      };
+
+      let stagedGalleryUploads = [];
+
+      const toastEl = document.getElementById('toast');
+      let toastTimer = null;
+      function showToast(msg) {
+        toastEl.textContent = msg;
+        toastEl.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toastEl.classList.remove('show'), 3600);
+      }
+
+      function escapeHtml(str) {
+        return String(str ?? '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      }
+
+      // Navigation & Mobile Sidebar
+      const sidebar = document.getElementById('sidebar');
+      const sidebarBackdrop = document.getElementById('sidebarBackdrop');
+      const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+      const viewTitle = document.getElementById('viewTitle');
+
+      const viewTitles = {
+        dashboard: 'Dashboard Overview',
+        categories: 'Mehendi Categories (CRUD)',
+        gallery: 'Portfolio Gallery Management',
+        services: 'Services & Pricing Management',
+        enquiries: 'Customer Booking Enquiries',
+        settings: 'Website Settings'
+      };
+
+      function closeMobileSidebar() {
+        sidebar.classList.remove('open');
+        sidebarBackdrop.classList.remove('open');
+      }
+
+      mobileMenuBtn.addEventListener('click', () => {
+        sidebar.classList.toggle('open');
+        sidebarBackdrop.classList.toggle('open');
+      });
+      sidebarBackdrop.addEventListener('click', closeMobileSidebar);
+
+      function switchView(viewName) {
+        document.querySelectorAll('.cms-view').forEach((el) => el.classList.remove('active'));
+        document.querySelectorAll('.nav-btn').forEach((btn) => {
+          btn.classList.toggle('active', btn.dataset.view === viewName);
+        });
+        const target = document.getElementById('view-' + viewName);
+        if (target) target.classList.add('active');
+        viewTitle.textContent = viewTitles[viewName] || 'Admin Panel';
+        closeMobileSidebar();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      document.querySelectorAll('.nav-btn').forEach((btn) => {
+        btn.addEventListener('click', () => switchView(btn.dataset.view));
+      });
+      document.querySelectorAll('[data-jump]').forEach((btn) => {
+        btn.addEventListener('click', () => switchView(btn.dataset.jump));
+      });
+
+      // Logout
+      document.getElementById('logoutBtn').addEventListener('click', async () => {
+        await fetch('/api/auth/logout', { method: 'POST' });
+        window.location.href = '/admin/login';
+      });
+
+      // Client-side image optimizer using Canvas (converts/resizes before uploading to persistent server storage)
+      function optimizeImageFile(file, maxDim = 1500, quality = 0.85) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onerror = () => reject(new Error('Failed to read file'));
+          reader.onload = () => {
+            const img = new Image();
+            img.onerror = () => reject(new Error('Invalid image file'));
+            img.onload = () => {
+              let w = img.width;
+              let h = img.height;
+              if (w > maxDim || h > maxDim) {
+                if (w > h) {
+                  h = Math.round((h * maxDim) / w);
+                  w = maxDim;
+                } else {
+                  w = Math.round((w * maxDim) / h);
+                  h = maxDim;
+                }
+              }
+              const canvas = document.createElement('canvas');
+              canvas.width = w;
+              canvas.height = h;
+              const ctx = canvas.getContext('2d');
+              ctx.drawImage(img, 0, 0, w, h);
+              const outMime = 'image/webp';
+              const dataUrl = canvas.toDataURL(outMime, quality);
+              resolve({
+                base64Data: dataUrl,
+                mimeType: outMime,
+                originalName: file.name
+              });
+            };
+            img.src = reader.result;
+          };
+          reader.readAsDataURL(file);
+        });
+      }
+
+      async function uploadSingleFileToServer(file) {
+        const optimized = await optimizeImageFile(file);
+        const res = await fetch('/api/admin/upload', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(optimized)
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Image upload failed');
+        return data.url;
+      }
+
+      // Fetch all CMS data
+      async function loadBootstrap() {
+        const res = await fetch('/api/admin/bootstrap');
+        if (res.status === 401) {
+          window.location.href = '/admin/login';
+          return;
+        }
+        const data = await res.json();
+        state = data;
+        renderAll();
+      }
+
+      function renderAll() {
+        const s = state.stats || {};
+        document.getElementById('statCategories').textContent = s.totalCategories ?? 0;
+        document.getElementById('statCategoriesSub').textContent = `${s.activeCategories ?? 0} active on website`;
+        document.getElementById('statGallery').textContent = s.totalGalleryImages ?? 0;
+        document.getElementById('statGallerySub').textContent = `${s.featuredGalleryImages ?? 0} featured designs`;
+        document.getElementById('statServices').textContent = s.totalServices ?? 0;
+        document.getElementById('statServicesSub').textContent = `${s.activeServices ?? 0} active packages`;
+        document.getElementById('statEnquiries').textContent = s.totalEnquiries ?? 0;
+        document.getElementById('statNewEnquiries').textContent = s.newEnquiries ?? 0;
+
+        document.getElementById('navCatCount').textContent = s.totalCategories ?? 0;
+        document.getElementById('navGalCount').textContent = s.totalGalleryImages ?? 0;
+        document.getElementById('navEnqBadge').textContent = s.newEnquiries ?? 0;
+        document.getElementById('storageBadge').textContent =
+          state.storageMode === 'supabase' ? 'Database: Supabase' : 'Database: Persistent Server DB';
+
+        renderRecentEnquiries();
+        renderCategoriesList();
+        renderGalleryAdmin();
+        renderServicesList();
+        renderEnquiriesTable();
+        populateSettingsForm();
+      }
+
+      // ======================================================================
+      // 1. Dashboard Recent Enquiries
+      // ======================================================================
+      function renderRecentEnquiries() {
+        const tbody = document.getElementById('recentEnquiriesBody');
+        const list = (state.enquiries || []).slice(0, 5);
+        if (list.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6" style="color:var(--muted)">No enquiries yet.</td></tr>';
+          return;
+        }
+        tbody.innerHTML = list
+          .map(
+            (e) => `
+          <tr>
+            <td><strong>${escapeHtml(e.customer_name)}</strong></td>
+            <td>${escapeHtml(e.phone)}</td>
+            <td>${escapeHtml(e.event_date)}</td>
+            <td>${escapeHtml(e.service)}</td>
+            <td>${escapeHtml(e.location)}</td>
+            <td><span class="badge status-${escapeHtml(e.status)}">${escapeHtml(e.status)}</span></td>
+          </tr>`
+          )
+          .join('');
+      }
+
+      // ======================================================================
+      // 2. Categories CRUD
+      // ======================================================================
+      const catImgRowsEl = document.getElementById('catImgRows');
+
+      function addCategoryImageSlot(img = { url: '', caption: '', source_url: '' }) {
+        const row = document.createElement('div');
+        row.className = 'cat-img-row';
+        row.innerHTML = `
+          <img src="${escapeHtml(img.url || '/images/logo.png')}" alt="Preview" onerror="this.src='/images/logo.png'">
+          <input type="text" class="cat-img-url" placeholder="Image URL or /uploads/..." value="${escapeHtml(img.url || '')}" required>
+          <input type="text" class="cat-img-caption" placeholder="Caption (e.g. Bridal hands & feet)" value="${escapeHtml(img.caption || '')}" required>
+          <button type="button" class="btn danger sm remove-slot-btn">Remove</button>
+        `;
+        const urlInput = row.querySelector('.cat-img-url');
+        const previewImg = row.querySelector('img');
+        urlInput.addEventListener('input', () => {
+          previewImg.src = urlInput.value.trim() || '/images/logo.png';
+        });
+        row.querySelector('.remove-slot-btn').addEventListener('click', () => row.remove());
+        catImgRowsEl.appendChild(row);
+      }
+
+      function resetCategoryForm() {
+        document.getElementById('catId').value = '';
+        document.getElementById('catName').value = '';
+        document.getElementById('catDesc').value = '';
+        document.getElementById('catFootNote').value = 'Hands & feet';
+        document.getElementById('catOrder').value = (state.categories.length || 7) + 1;
+        document.getElementById('catEnabled').checked = true;
+        document.getElementById('catFormTitle').textContent = 'Add New Mehendi Category';
+        document.getElementById('saveCatBtn').textContent = 'Save Category';
+        document.getElementById('resetCatFormBtn').style.display = 'none';
+        catImgRowsEl.innerHTML = '';
+        addCategoryImageSlot({ url: '/images/alfiya-work-1.webp', caption: 'Hands design reference' });
+        addCategoryImageSlot({ url: '/images/alfiya-work-2.webp', caption: 'Back-hand floral trail' });
+        addCategoryImageSlot({ url: '/images/alfiya-work-3.webp', caption: 'Traditional feet design' });
+      }
+
+      document.getElementById('addCatImgRowBtn').addEventListener('click', () => {
+        addCategoryImageSlot({ url: '', caption: '' });
+      });
+
+      document.getElementById('catUploadInput').addEventListener('change', async (e) => {
+        const files = Array.from(e.target.files || []);
+        for (const file of files) {
+          try {
+            showToast(`Uploading ${file.name}...`);
+            const uploadedUrl = await uploadSingleFileToServer(file);
+            const cleanCaption = file.name.replace(/\.[^/.]+$/, '').replace(/[-_]+/g, ' ');
+            addCategoryImageSlot({ url: uploadedUrl, caption: cleanCaption });
+            showToast('Image uploaded and added to category!');
+          } catch (err) {
+            showToast(err.message);
+          }
+        }
+        e.target.value = '';
+      });
+
+      document.getElementById('resetCatFormBtn').addEventListener('click', resetCategoryForm);
+
+      document.getElementById('categoryForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const id = document.getElementById('catId').value;
+        const images = [];
+        catImgRowsEl.querySelectorAll('.cat-img-row').forEach((row) => {
+          const url = row.querySelector('.cat-img-url').value.trim();
+          const caption = row.querySelector('.cat-img-caption').value.trim() || 'Mehndi reference';
+          if (url) {
+            images.push({ url, source_url: url, caption, alt: `${caption}` });
+          }
+        });
+
+        const payload = {
+          name: document.getElementById('catName').value.trim(),
+          description: document.getElementById('catDesc').value.trim(),
+          foot_note: document.getElementById('catFootNote').value.trim() || 'Hands & feet',
+          display_order: Number(document.getElementById('catOrder').value) || 1,
+          enabled: document.getElementById('catEnabled').checked,
+          images
+        };
+
+        const url = id ? `/api/admin/categories/${encodeURIComponent(id)}` : '/api/admin/categories';
+        const method = id ? 'PUT' : 'POST';
+
+        const res = await fetch(url, {
+          method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          showToast(data.error || 'Failed to save category');
+          return;
+        }
+        showToast(id ? 'Category updated!' : 'New category added!');
+        await loadBootstrap();
+        resetCategoryForm();
+      });
+
+      function renderCategoriesList() {
+        const container = document.getElementById('categoriesList');
+        const cats = state.categories || [];
+        container.innerHTML = cats
+          .map(
+            (c, idx) => `
+          <div class="admin-item-card ${c.enabled === false ? 'disabled-item' : ''}">
+            <div>
+              <div class="item-top">
+                <div>
+                  <span style="font-size:11px;color:var(--gold-deep);font-weight:700;letter-spacing:.14em">ORDER #${c.display_order || idx + 1}</span>
+                  <h3 class="item-title">${escapeHtml(c.name)}</h3>
+                </div>
+                <span class="badge ${c.enabled !== false ? 'enabled' : 'disabled'}">${c.enabled !== false ? 'Enabled' : 'Hidden'}</span>
+              </div>
+              <p style="font-size:13px;color:var(--muted);margin:0 0 12px">${escapeHtml(c.description)}</p>
+              <div class="thumb-strip">
+                ${(c.images || [])
+                  .slice(0, 6)
+                  .map(
+                    (img) => `
+                  <div class="thumb-box">
+                    <img src="${escapeHtml(img.url)}" alt="${escapeHtml(img.caption)}" onerror="this.src='/images/logo.png'">
+                    <span>${escapeHtml(img.caption)}</span>
+                  </div>`
+                  )
+                  .join('')}
+              </div>
+            </div>
+            <div class="item-actions">
+              <div style="display:flex;gap:6px">
+                <button class="btn outline sm" type="button" data-cat-move="${escapeHtml(c.id)}" data-dir="-1" ${idx === 0 ? 'disabled' : ''}>↑</button>
+                <button class="btn outline sm" type="button" data-cat-move="${escapeHtml(c.id)}" data-dir="1" ${idx === cats.length - 1 ? 'disabled' : ''}>↓</button>
+                <button class="btn outline sm" type="button" data-cat-toggle="${escapeHtml(c.id)}">${c.enabled !== false ? 'Disable' : 'Enable'}</button>
+              </div>
+              <div style="display:flex;gap:6px">
+                <button class="btn outline sm" type="button" data-cat-edit="${escapeHtml(c.id)}">Edit</button>
+                <button class="btn danger sm" type="button" data-cat-del="${escapeHtml(c.id)}">Delete</button>
+              </div>
+            </div>
+          </div>`
+          )
+          .join('');
+
+        container.querySelectorAll('[data-cat-edit]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const cat = state.categories.find((x) => x.id === btn.dataset.catEdit);
+            if (!cat) return;
+            document.getElementById('catId').value = cat.id;
+            document.getElementById('catName').value = cat.name;
+            document.getElementById('catDesc').value = cat.description;
+            document.getElementById('catFootNote').value = cat.foot_note || 'Hands & feet';
+            document.getElementById('catOrder').value = cat.display_order || 1;
+            document.getElementById('catEnabled').checked = cat.enabled !== false;
+            document.getElementById('catFormTitle').textContent = `Edit Category: ${cat.name}`;
+            document.getElementById('saveCatBtn').textContent = 'Update Category';
+            document.getElementById('resetCatFormBtn').style.display = 'inline-flex';
+            catImgRowsEl.innerHTML = '';
+            (cat.images || []).forEach((img) => addCategoryImageSlot(img));
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          });
+        });
+
+        container.querySelectorAll('[data-cat-toggle]').forEach((btn) => {
+          btn.addEventListener('click', async () => {
+            const cat = state.categories.find((x) => x.id === btn.dataset.catToggle);
+            if (!cat) return;
+            await fetch(`/api/admin/categories/${encodeURIComponent(cat.id)}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ enabled: cat.enabled === false })
+            });
+            showToast(`Category ${cat.enabled === false ? 'enabled' : 'disabled'}.`);
+            await loadBootstrap();
+          });
+        });
+
+        container.querySelectorAll('[data-cat-move]').forEach((btn) => {
+          btn.addEventListener('click', async () => {
+            const idx = state.categories.findIndex((x) => x.id === btn.dataset.catMove);
+            const swapIdx = idx + Number(btn.dataset.dir);
+            if (idx < 0 || swapIdx < 0 || swapIdx >= state.categories.length) return;
+            const a = state.categories[idx];
+            const b = state.categories[swapIdx];
+            await Promise.all([
+              fetch(`/api/admin/categories/${encodeURIComponent(a.id)}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ display_order: swapIdx + 1 })
+              }),
+              fetch(`/api/admin/categories/${encodeURIComponent(b.id)}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ display_order: idx + 1 })
+              })
+            ]);
+            showToast('Category order updated!');
+            await loadBootstrap();
+          });
+        });
+
+        container.querySelectorAll('[data-cat-del]').forEach((btn) => {
+          btn.addEventListener('click', async () => {
+            const cat = state.categories.find((x) => x.id === btn.dataset.catDel);
+            if (!cat) return;
+            if (!confirm(`Delete category "${cat.name}"?`)) return;
+            await fetch(`/api/admin/categories/${encodeURIComponent(cat.id)}`, { method: 'DELETE' });
+            showToast('Category deleted.');
+            await loadBootstrap();
+          });
+        });
+      }
+
+      // ======================================================================
+      // 3. Gallery Management (Multi-upload + Preview + CRUD)
+      // ======================================================================
+      const galleryFileInput = document.getElementById('galleryFileInput');
+      const galleryStagingArea = document.getElementById('galleryStagingArea');
+      const galleryStagingGrid = document.getElementById('galleryStagingGrid');
+
+      function getCategoryOptionsHtml(selectedName = '') {
+        const names = (state.categories || []).map((c) => c.name);
+        if (!names.includes('Bridal Mehndi')) names.unshift('Bridal Mehndi');
+        return names
+          .map(
+            (n) =>
+              `<option value="${escapeHtml(n)}" ${n === selectedName ? 'selected' : ''}>${escapeHtml(n)}</option>`
+          )
+          .join('');
+      }
+
+      galleryFileInput.addEventListener('change', async (e) => {
+        const files = Array.from(e.target.files || []);
+        if (files.length === 0) return;
+        for (const file of files) {
+          try {
+            const optimized = await optimizeImageFile(file);
+            const defaultTitle = file.name
+              .replace(/\.[^/.]+$/, '')
+              .replace(/[-_]+/g, ' ')
+              .replace(/\b\w/g, (c) => c.toUpperCase());
+            stagedGalleryUploads.push({
+              ...optimized,
+              title: defaultTitle || 'Bridal Mehendi Design',
+              description: `${defaultTitle || 'Mehendi design'} by Alfiya Tamboli`,
+              category_name: 'Bridal Mehndi',
+              featured: true
+            });
+          } catch (err) {
+            showToast(err.message);
+          }
+        }
+        e.target.value = '';
+        renderStagingUploads();
+      });
+
+      function renderStagingUploads() {
+        if (stagedGalleryUploads.length === 0) {
+          galleryStagingArea.style.display = 'none';
+          galleryStagingGrid.innerHTML = '';
+          return;
+        }
+        galleryStagingArea.style.display = 'block';
+        galleryStagingGrid.innerHTML = stagedGalleryUploads
+          .map(
+            (item, idx) => `
+          <div class="staging-item" data-stage-idx="${idx}">
+            <img src="${item.base64Data}" alt="Upload preview">
+            <div style="display:grid;gap:6px">
+              <input type="text" class="st-title" value="${escapeHtml(item.title)}" placeholder="Image Title" style="padding:7px;border:1px solid #cbbba4">
+              <select class="st-cat" style="padding:7px;border:1px solid #cbbba4">${getCategoryOptionsHtml(item.category_name)}</select>
+              <input type="text" class="st-desc" value="${escapeHtml(item.description)}" placeholder="Description / Alt text" style="padding:7px;border:1px solid #cbbba4">
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <label class="checkbox-row" style="font-size:12px;margin:0">
+                  <input type="checkbox" class="st-feat" ${item.featured ? 'checked' : ''}>
+                  <span>Featured</span>
+                </label>
+                <button type="button" class="btn danger sm st-remove" data-rm="${idx}">Remove</button>
+              </div>
+            </div>
+          </div>`
+          )
+          .join('');
+
+        galleryStagingGrid.querySelectorAll('.st-remove').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            stagedGalleryUploads.splice(Number(btn.dataset.rm), 1);
+            renderStagingUploads();
+          });
+        });
+      }
+
+      document.getElementById('clearGalleryStagingBtn').addEventListener('click', () => {
+        stagedGalleryUploads = [];
+        renderStagingUploads();
+      });
+
+      document.getElementById('confirmGalleryUploadBtn').addEventListener('click', async () => {
+        if (stagedGalleryUploads.length === 0) return;
+        const btn = document.getElementById('confirmGalleryUploadBtn');
+        btn.disabled = true;
+        btn.textContent = 'Uploading & Saving...';
+
+        try {
+          const cards = galleryStagingGrid.querySelectorAll('.staging-item');
+          const createdItems = [];
+
+          for (let i = 0; i < stagedGalleryUploads.length; i++) {
+            const raw = stagedGalleryUploads[i];
+            const card = cards[i];
+            const title = card.querySelector('.st-title').value.trim() || 'Mehendi Design';
+            const category_name = card.querySelector('.st-cat').value;
+            const description = card.querySelector('.st-desc').value.trim() || title;
+            const featured = card.querySelector('.st-feat').checked;
+
+            const upRes = await fetch('/api/admin/upload', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                base64Data: raw.base64Data,
+                mimeType: raw.mimeType,
+                originalName: raw.originalName
+              })
+            });
+            const upData = await upRes.json();
+            if (!upRes.ok) throw new Error(upData.error || 'Upload failed');
+
+            createdItems.push({
+              title,
+              description,
+              category_name,
+              image_url: upData.url,
+              featured
+            });
+          }
+
+          const saveRes = await fetch('/api/admin/gallery', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ items: createdItems })
+          });
+          const saveData = await saveRes.json();
+          if (!saveRes.ok) throw new Error(saveData.error || 'Failed to save gallery items');
+
+          stagedGalleryUploads = [];
+          renderStagingUploads();
+          showToast(`${createdItems.length} portfolio image(s) uploaded and saved!`);
+          await loadBootstrap();
+        } catch (err) {
+          showToast(err.message);
+        } finally {
+          btn.disabled = false;
+          btn.textContent = 'Upload & Save to Portfolio';
+        }
+      });
+
+      function renderGalleryAdmin() {
+        const grid = document.getElementById('galleryAdminGrid');
+        const list = state.gallery || [];
+        grid.innerHTML = list
+          .map(
+            (g, idx) => `
+          <div class="gal-card">
+            <div>
+              <div class="gal-card-media">
+                <img src="${escapeHtml(g.image_url)}" alt="${escapeHtml(g.description || g.title)}">
+                ${g.featured ? '<span class="gal-featured-tag">★ Featured</span>' : ''}
+              </div>
+              <div class="gal-card-body">
+                <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--gold-deep);font-weight:700">
+                  <span>${escapeHtml(g.category_name || 'Bridal Mehndi')}</span>
+                  <span>Order #${g.display_order || idx + 1}</span>
+                </div>
+                <h3>${escapeHtml(g.title)}</h3>
+                <p>${escapeHtml(g.description)}</p>
+              </div>
+            </div>
+            <div class="item-actions" style="padding:10px 14px 14px">
+              <div style="display:flex;gap:5px">
+                <button class="btn outline sm" type="button" data-gal-move="${escapeHtml(g.id)}" data-dir="-1" ${idx === 0 ? 'disabled' : ''}>↑</button>
+                <button class="btn outline sm" type="button" data-gal-move="${escapeHtml(g.id)}" data-dir="1" ${idx === list.length - 1 ? 'disabled' : ''}>↓</button>
+                <button class="btn outline sm" type="button" data-gal-feat="${escapeHtml(g.id)}">${g.featured ? 'Unfeature' : '★ Feature'}</button>
+              </div>
+              <div style="display:flex;gap:5px">
+                <button class="btn outline sm" type="button" data-gal-edit="${escapeHtml(g.id)}">Edit</button>
+                <button class="btn danger sm" type="button" data-gal-del="${escapeHtml(g.id)}">Delete</button>
+              </div>
+            </div>
+          </div>`
+          )
+          .join('');
+
+        grid.querySelectorAll('[data-gal-feat]').forEach((btn) => {
+          btn.addEventListener('click', async () => {
+            const g = state.gallery.find((x) => x.id === btn.dataset.galFeat);
+            if (!g) return;
+            await fetch(`/api/admin/gallery/${encodeURIComponent(g.id)}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ featured: !g.featured })
+            });
+            showToast('Featured status updated.');
+            await loadBootstrap();
+          });
+        });
+
+        grid.querySelectorAll('[data-gal-move]').forEach((btn) => {
+          btn.addEventListener('click', async () => {
+            const idx = state.gallery.findIndex((x) => x.id === btn.dataset.galMove);
+            const swapIdx = idx + Number(btn.dataset.dir);
+            if (idx < 0 || swapIdx < 0 || swapIdx >= state.gallery.length) return;
+            const a = state.gallery[idx];
+            const b = state.gallery[swapIdx];
+            await Promise.all([
+              fetch(`/api/admin/gallery/${encodeURIComponent(a.id)}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ display_order: swapIdx + 1 })
+              }),
+              fetch(`/api/admin/gallery/${encodeURIComponent(b.id)}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ display_order: idx + 1 })
+              })
+            ]);
+            showToast('Gallery order updated.');
+            await loadBootstrap();
+          });
+        });
+
+        grid.querySelectorAll('[data-gal-edit]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const g = state.gallery.find((x) => x.id === btn.dataset.galEdit);
+            if (!g) return;
+            document.getElementById('editGalId').value = g.id;
+            document.getElementById('editGalTitleInput').value = g.title;
+            document.getElementById('editGalCategoryInput').innerHTML = getCategoryOptionsHtml(g.category_name);
+            document.getElementById('editGalDescInput').value = g.description;
+            document.getElementById('editGalOrderInput').value = g.display_order || 1;
+            document.getElementById('editGalFeaturedInput').checked = Boolean(g.featured);
+            document.getElementById('editGalleryModal').classList.add('open');
+          });
+        });
+
+        grid.querySelectorAll('[data-gal-del]').forEach((btn) => {
+          btn.addEventListener('click', async () => {
+            const g = state.gallery.find((x) => x.id === btn.dataset.galDel);
+            if (!g) return;
+            if (!confirm(`Delete portfolio image "${g.title}"?`)) return;
+            await fetch(`/api/admin/gallery/${encodeURIComponent(g.id)}`, { method: 'DELETE' });
+            showToast('Gallery image deleted.');
+            await loadBootstrap();
+          });
+        });
+      }
+
+      document.getElementById('closeGalModalBtn').addEventListener('click', () => {
+        document.getElementById('editGalleryModal').classList.remove('open');
+      });
+
+      document.getElementById('editGalleryForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const id = document.getElementById('editGalId').value;
+        const payload = {
+          title: document.getElementById('editGalTitleInput').value.trim(),
+          category_name: document.getElementById('editGalCategoryInput').value,
+          description: document.getElementById('editGalDescInput').value.trim(),
+          display_order: Number(document.getElementById('editGalOrderInput').value) || 1,
+          featured: document.getElementById('editGalFeaturedInput').checked
+        };
+        const res = await fetch(`/api/admin/gallery/${encodeURIComponent(id)}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          document.getElementById('editGalleryModal').classList.remove('open');
+          showToast('Portfolio image updated!');
+          await loadBootstrap();
+        }
+      });
+
+      // ======================================================================
+      // 4. Services & Pricing CRUD
+      // ======================================================================
+      function resetServiceForm() {
+        document.getElementById('srvId').value = '';
+        document.getElementById('srvName').value = '';
+        document.getElementById('srvPrice').value = '';
+        document.getElementById('srvDesc').value = '';
+        document.getElementById('srvOrder').value = (state.services.length || 4) + 1;
+        document.getElementById('srvDemo').checked = true;
+        document.getElementById('srvEnabled').checked = true;
+        document.getElementById('srvFormTitle').textContent = 'Add / Edit Service Package';
+        document.getElementById('saveSrvBtn').textContent = 'Save Service';
+        document.getElementById('resetSrvFormBtn').style.display = 'none';
+      }
+
+      document.getElementById('resetSrvFormBtn').addEventListener('click', resetServiceForm);
+
+      document.getElementById('serviceForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const id = document.getElementById('srvId').value;
+        const payload = {
+          name: document.getElementById('srvName').value.trim(),
+          starting_price: document.getElementById('srvPrice').value.trim(),
+          description: document.getElementById('srvDesc').value.trim(),
+          display_order: Number(document.getElementById('srvOrder').value) || 1,
+          is_demo_price: document.getElementById('srvDemo').checked,
+          enabled: document.getElementById('srvEnabled').checked
+        };
+
+        const url = id ? `/api/admin/services/${encodeURIComponent(id)}` : '/api/admin/services';
+        const method = id ? 'PUT' : 'POST';
+
+        const res = await fetch(url, {
+          method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          showToast(data.error || 'Failed to save service');
+          return;
+        }
+        showToast(id ? 'Service updated!' : 'New service added!');
+        await loadBootstrap();
+        resetServiceForm();
+      });
+
+      function renderServicesList() {
+        const container = document.getElementById('servicesList');
+        const list = state.services || [];
+        container.innerHTML = list
+          .map(
+            (s) => `
+          <div class="admin-item-card ${s.enabled === false ? 'disabled-item' : ''}">
+            <div>
+              <div class="item-top">
+                <div>
+                  <span style="font-size:11px;color:var(--gold-deep);font-weight:700">${escapeHtml(s.starting_price)}</span>
+                  <h3 class="item-title">${escapeHtml(s.name)}</h3>
+                </div>
+                <span class="badge ${s.enabled !== false ? 'enabled' : 'disabled'}">${s.enabled !== false ? 'Enabled' : 'Disabled'}</span>
+              </div>
+              <p style="font-size:13px;color:var(--muted);margin:0">${escapeHtml(s.description)}</p>
+            </div>
+            <div class="item-actions">
+              <button class="btn outline sm" type="button" data-srv-toggle="${escapeHtml(s.id)}">${s.enabled !== false ? 'Disable' : 'Enable'}</button>
+              <div style="display:flex;gap:6px">
+                <button class="btn outline sm" type="button" data-srv-edit="${escapeHtml(s.id)}">Edit Pricing / Details</button>
+                <button class="btn danger sm" type="button" data-srv-del="${escapeHtml(s.id)}">Delete</button>
+              </div>
+            </div>
+          </div>`
+          )
+          .join('');
+
+        container.querySelectorAll('[data-srv-edit]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const s = state.services.find((x) => x.id === btn.dataset.srvEdit);
+            if (!s) return;
+            document.getElementById('srvId').value = s.id;
+            document.getElementById('srvName').value = s.name;
+            document.getElementById('srvPrice').value = s.starting_price;
+            document.getElementById('srvDesc').value = s.description;
+            document.getElementById('srvOrder').value = s.display_order || 1;
+            document.getElementById('srvDemo').checked = s.is_demo_price !== false;
+            document.getElementById('srvEnabled').checked = s.enabled !== false;
+            document.getElementById('srvFormTitle').textContent = `Edit Service: ${s.name}`;
+            document.getElementById('saveSrvBtn').textContent = 'Update Service';
+            document.getElementById('resetSrvFormBtn').style.display = 'inline-flex';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          });
+        });
+
+        container.querySelectorAll('[data-srv-toggle]').forEach((btn) => {
+          btn.addEventListener('click', async () => {
+            const s = state.services.find((x) => x.id === btn.dataset.srvToggle);
+            if (!s) return;
+            await fetch(`/api/admin/services/${encodeURIComponent(s.id)}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ enabled: s.enabled === false })
+            });
+            showToast('Service status updated.');
+            await loadBootstrap();
+          });
+        });
+
+        container.querySelectorAll('[data-srv-del]').forEach((btn) => {
+          btn.addEventListener('click', async () => {
+            const s = state.services.find((x) => x.id === btn.dataset.srvDel);
+            if (!s) return;
+            if (!confirm(`Delete service "${s.name}"?`)) return;
+            await fetch(`/api/admin/services/${encodeURIComponent(s.id)}`, { method: 'DELETE' });
+            showToast('Service deleted.');
+            await loadBootstrap();
+          });
+        });
+      }
+
+      // ======================================================================
+      // 5. Booking Enquiries Management
+      // ======================================================================
+      const enqSearchInput = document.getElementById('enqSearchInput');
+      const enqStatusFilter = document.getElementById('enqStatusFilter');
+
+      enqSearchInput.addEventListener('input', renderEnquiriesTable);
+      enqStatusFilter.addEventListener('change', renderEnquiriesTable);
+
+      function renderEnquiriesTable() {
+        const tbody = document.getElementById('enquiriesTableBody');
+        const q = enqSearchInput.value.trim().toLowerCase();
+        const statusFilter = enqStatusFilter.value;
+
+        const filtered = (state.enquiries || []).filter((e) => {
+          if (statusFilter !== 'ALL' && e.status !== statusFilter) return false;
+          if (!q) return true;
+          const hay = `${e.customer_name} ${e.phone} ${e.location} ${e.service} ${e.message}`.toLowerCase();
+          return hay.includes(q);
+        });
+
+        if (filtered.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="7" style="color:var(--muted)">No matching enquiries found.</td></tr>';
+          return;
+        }
+
+        const statuses = ['New', 'Contacted', 'Confirmed', 'Completed', 'Cancelled'];
+        tbody.innerHTML = filtered
+          .map((e) => {
+            const dateStr = e.created_at ? new Date(e.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
+            const cleanDigits = String(e.phone || '').replace(/[^0-9]/g, '');
+            const replyWa = cleanDigits
+              ? `https://wa.me/${cleanDigits.length === 10 ? '91' + cleanDigits : cleanDigits}?text=${encodeURIComponent(`Hi ${e.customer_name}, this is Alfiya Tamboli regarding your mehendi enquiry for ${e.event_date}.`)}`
+              : '';
+            return `
+            <tr>
+              <td style="white-space:nowrap;font-size:12px;color:var(--muted)">${escapeHtml(dateStr)}</td>
+              <td>
+                <strong>${escapeHtml(e.customer_name)}</strong><br>
+                <span style="font-size:12.5px;color:var(--muted)">${escapeHtml(e.phone)}</span>
+                ${replyWa ? `<br><a href="${replyWa}" target="_blank" rel="noopener" style="font-size:11px;color:#1c6d43;font-weight:600;text-decoration:underline">Reply on WhatsApp ↗</a>` : ''}
+              </td>
+              <td style="white-space:nowrap">${escapeHtml(e.event_date)}</td>
+              <td>
+                <strong>${escapeHtml(e.service)}</strong><br>
+                <span style="font-size:12px;color:var(--muted)">${escapeHtml(e.location)}</span>
+              </td>
+              <td style="max-width:240px;font-size:12.5px">${escapeHtml(e.message || '—')}</td>
+              <td>
+                <select data-enq-status="${escapeHtml(e.id)}" style="padding:6px 8px;border:1px solid #cbbba4;background:#fffdf8;font-size:12.5px">
+                  ${statuses
+                    .map(
+                      (st) => `<option value="${st}" ${e.status === st ? 'selected' : ''}>${st}</option>`
+                    )
+                    .join('')}
+                </select>
+              </td>
+              <td style="white-space:nowrap">
+                <button class="btn outline sm" type="button" data-enq-view="${escapeHtml(e.id)}">View</button>
+                <button class="btn danger sm" type="button" data-enq-del="${escapeHtml(e.id)}">Delete</button>
+              </td>
+            </tr>`;
+          })
+          .join('');
+
+        tbody.querySelectorAll('[data-enq-status]').forEach((sel) => {
+          sel.addEventListener('change', async () => {
+            const id = sel.dataset.enqStatus;
+            const status = sel.value;
+            const res = await fetch(`/api/admin/enquiries/${encodeURIComponent(id)}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ status })
+            });
+            if (res.ok) {
+              showToast(`Enquiry marked as ${status}.`);
+              await loadBootstrap();
+            }
+          });
+        });
+
+        tbody.querySelectorAll('[data-enq-view]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const e = state.enquiries.find((x) => x.id === btn.dataset.enqView);
+            if (!e) return;
+            document.getElementById('viewEnqContent').innerHTML = `
+              <div><strong>Customer Name:</strong> ${escapeHtml(e.customer_name)}</div>
+              <div><strong>Phone Number:</strong> ${escapeHtml(e.phone)}</div>
+              <div><strong>Event Date:</strong> ${escapeHtml(e.event_date)}</div>
+              <div><strong>Service / Category:</strong> ${escapeHtml(e.service)}</div>
+              <div><strong>Event Location:</strong> ${escapeHtml(e.location)}</div>
+              <div><strong>Additional Message:</strong> ${escapeHtml(e.message || 'None')}</div>
+              <div><strong>Current Status:</strong> <span class="badge status-${escapeHtml(e.status)}">${escapeHtml(e.status)}</span></div>
+              <div><strong>Submitted At:</strong> ${escapeHtml(new Date(e.created_at).toLocaleString())}</div>
+            `;
+            document.getElementById('viewEnquiryModal').classList.add('open');
+          });
+        });
+
+        tbody.querySelectorAll('[data-enq-del]').forEach((btn) => {
+          btn.addEventListener('click', async () => {
+            const e = state.enquiries.find((x) => x.id === btn.dataset.enqDel);
+            if (!e) return;
+            if (!confirm(`Delete enquiry from "${e.customer_name}"?`)) return;
+            await fetch(`/api/admin/enquiries/${encodeURIComponent(e.id)}`, { method: 'DELETE' });
+            showToast('Enquiry deleted.');
+            await loadBootstrap();
+          });
+        });
+      }
+
+      document.getElementById('closeEnqModalBtn').addEventListener('click', () => {
+        document.getElementById('viewEnquiryModal').classList.remove('open');
+      });
+
+      // ======================================================================
+      // 6. Website Settings
+      // ======================================================================
+      function populateSettingsForm() {
+        const s = state.settings || {};
+        document.getElementById('setArtistName').value = s.artist_name || '';
+        document.getElementById('setTagline').value = s.tagline || '';
+        document.getElementById('setWhatsappNum').value = s.whatsapp_number || '';
+        document.getElementById('setWhatsappDisplay').value = s.whatsapp_display || '';
+        document.getElementById('setInstaUrl').value = s.instagram_url || '';
+        document.getElementById('setInstaHandle').value = s.instagram_handle || '';
+        document.getElementById('setLocation').value = s.location || '';
+        document.getElementById('setExpYears').value = s.experience_years || '';
+        document.getElementById('setTopline').value = s.topline_text || '';
+        document.getElementById('setHeroSubtitle').value = s.hero_subtitle || '';
+        document.getElementById('setAboutHeading').value = s.about_heading || '';
+        document.getElementById('setAboutP1').value = s.about_paragraph_1 || '';
+        document.getElementById('setAboutP2').value = s.about_paragraph_2 || '';
+        document.getElementById('setContactNote').value = s.contact_note || '';
+      }
+
+      document.getElementById('settingsForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const payload = {
+          artist_name: document.getElementById('setArtistName').value.trim(),
+          tagline: document.getElementById('setTagline').value.trim(),
+          whatsapp_number: document.getElementById('setWhatsappNum').value.trim(),
+          whatsapp_display: document.getElementById('setWhatsappDisplay').value.trim(),
+          instagram_url: document.getElementById('setInstaUrl').value.trim(),
+          instagram_handle: document.getElementById('setInstaHandle').value.trim(),
+          location: document.getElementById('setLocation').value.trim(),
+          experience_years: document.getElementById('setExpYears').value.trim(),
+          topline_text: document.getElementById('setTopline').value.trim(),
+          hero_subtitle: document.getElementById('setHeroSubtitle').value.trim(),
+          about_heading: document.getElementById('setAboutHeading').value.trim(),
+          about_paragraph_1: document.getElementById('setAboutP1').value.trim(),
+          about_paragraph_2: document.getElementById('setAboutP2').value.trim(),
+          contact_note: document.getElementById('setContactNote').value.trim()
+        };
+
+        const res = await fetch('/api/admin/settings', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          showToast(data.error || 'Failed to update settings');
+          return;
+        }
+        showToast('Website settings updated! Changes are now live on the website.');
+        await loadBootstrap();
+      });
+
+      // Initialize default category form slots & load data
+      resetCategoryForm();
+      loadBootstrap();
+    })();
+  </script>
+</body>
+</html>
+

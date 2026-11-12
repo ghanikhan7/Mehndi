@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/index.js" },
+    { "source": "/admin/login", "destination": "/api/index.js" },
+    { "source": "/admin", "destination": "/api/index.js" },
+    { "source": "/admin/", "destination": "/api/index.js" },
+    { "source": "/uploads/(.*)", "destination": "/api/index.js" }
+  ]
+}
+
