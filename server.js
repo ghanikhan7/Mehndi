@@ -50,7 +50,7 @@ const MIME_TYPES = {
   '.txt': 'text/plain; charset=utf-8'
 };
 
-function requestListener(req, res) {
+async function requestListener(req, res) {
   const parsedUrl = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
   const rawPathname = decodeURIComponent(parsedUrl.pathname);
   const pathname = rawPathname.replace(/\/+$/, '') || '/';
@@ -65,16 +65,18 @@ function requestListener(req, res) {
     return apiHandler(req, res);
   }
 
-  // 2. Serve bundled homepage & images directly
+  // 2. Serve bundled homepage & images synchronously to prevent serverless stream hangs
   if (BUNDLED_ASSETS[pathname]) {
     const assetPath = BUNDLED_ASSETS[pathname];
     if (fs.existsSync(assetPath)) {
       const ext = path.extname(assetPath).toLowerCase();
+      const buf = fs.readFileSync(assetPath);
       res.writeHead(200, {
         'Content-Type': MIME_TYPES[ext] || 'application/octet-stream',
+        'Content-Length': buf.length,
         'Cache-Control': ext === '.html' ? 'no-cache' : 'public, max-age=86400'
       });
-      return fs.createReadStream(assetPath).pipe(res);
+      return res.end(buf);
     }
   }
 
@@ -102,20 +104,24 @@ function requestListener(req, res) {
 
   const ext = path.extname(filePath).toLowerCase();
   const contentType = MIME_TYPES[ext] || 'application/octet-stream';
+  const buf = fs.readFileSync(filePath);
   res.writeHead(200, {
     'Content-Type': contentType,
+    'Content-Length': buf.length,
     'Cache-Control': ext === '.html' ? 'no-cache' : 'public, max-age=3600'
   });
-  return fs.createReadStream(filePath).pipe(res);
+  return res.end(buf);
 }
 
-const server = http.createServer(requestListener);
+// Only start a standalone TCP listener when running locally (not inside Vercel Serverless)
+if (!process.env.VERCEL && require.main === module) {
+  const server = http.createServer(requestListener);
+  server.listen(PORT, () => {
+    console.log(`Alfiya Tamboli Website & Mini CMS running at http://localhost:${PORT}`);
+    console.log(`- Public Website: http://localhost:${PORT}/`);
+    console.log(`- Admin Login:    http://localhost:${PORT}/admin/login`);
+    console.log(`- Admin Panel:    http://localhost:${PORT}/admin`);
+  });
+}
 
-server.listen(PORT, () => {
-  console.log(`Alfiya Tamboli Website & Mini CMS running at http://localhost:${PORT}`);
-  console.log(`- Public Website: http://localhost:${PORT}/`);
-  console.log(`- Admin Login:    http://localhost:${PORT}/admin/login`);
-  console.log(`- Admin Panel:    http://localhost:${PORT}/admin`);
-});
-
-module.exports = server;
+module.exports = requestListener;

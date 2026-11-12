@@ -130,12 +130,13 @@ module.exports = async function handler(req, res) {
         '.png': 'image/png',
         '.webp': 'image/webp'
       };
-      const stream = fs.createReadStream(filePath);
+      const buf = fs.readFileSync(filePath);
       res.writeHead(200, {
         'Content-Type': mimeMap[ext] || 'application/octet-stream',
+        'Content-Length': buf.length,
         'Cache-Control': 'public, max-age=31536000, immutable'
       });
-      return stream.pipe(res);
+      return res.end(buf);
     }
 
     // ========================================================================
