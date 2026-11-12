@@ -70,12 +70,28 @@ function readJsonBody(req, maxBytes = 8 * 1024 * 1024) {
   });
 }
 
+const PROJECT_ROOT = path.resolve(__dirname, '..');
+
+function resolveProjectFile(...segments) {
+  const fromRoot = path.join(PROJECT_ROOT, ...segments);
+  if (fs.existsSync(fromRoot)) return fromRoot;
+  return path.join(process.cwd(), ...segments);
+}
+
 module.exports = async function handler(req, res) {
   const parsedUrl = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
-  const pathname = parsedUrl.pathname.replace(/\/+$/, '') || '/';
+  const routedPath = parsedUrl.searchParams.get('__route') || parsedUrl.pathname;
+  const pathname = routedPath.replace(/\/+$/, '') || '/';
   const method = req.method.toUpperCase();
 
   try {
+    // ========================================================================
+    // 0. Public Homepage Fallback (if / or /index.html reaches this function)
+    // ========================================================================
+    if ((pathname === '/' || pathname === '/index.html') && method === 'GET') {
+      return sendHtmlFile(res, resolveProjectFile('index.html'));
+    }
+
     // ========================================================================
     // 1. Admin HTML Page Routes (/admin and /admin/login)
     // ========================================================================
@@ -84,7 +100,7 @@ module.exports = async function handler(req, res) {
       if (admin) {
         return redirect(res, '/admin');
       }
-      return sendHtmlFile(res, path.join(process.cwd(), 'admin', 'login.html'));
+      return sendHtmlFile(res, resolveProjectFile('lib', 'views', 'login.html'));
     }
 
     if (pathname === '/admin' && method === 'GET') {
@@ -92,7 +108,7 @@ module.exports = async function handler(req, res) {
       if (!admin) {
         return redirect(res, '/admin/login');
       }
-      return sendHtmlFile(res, path.join(process.cwd(), 'admin', 'index.html'));
+      return sendHtmlFile(res, resolveProjectFile('lib', 'views', 'admin.html'));
     }
 
     // ========================================================================

@@ -6,12 +6,11 @@ LIVE LOCAL ROUTES:
 - Admin Login:    http://localhost:8080/admin/login
 - Admin Panel:    http://localhost:8080/admin
 
-DEMO ADMIN CREDENTIALS (Development Only):
-- Username: admin
-- Password: Alfiya@Demo2026
+ADMIN AUTHENTICATION:
+- Configure ADMIN_USERNAME, ADMIN_PASSWORD_SALT, ADMIN_PASSWORD_HASH, and SESSION_SECRET via environment variables in Vercel (see .env.example).
 
 HOW TO RUN LOCALLY:
-1. Run `node server.js` (or `npm start`).
+1. Run `npm start` (or `node scripts/dev-server.js`).
 2. Open `http://localhost:8080` in your browser.
 3. Visit `http://localhost:8080/admin/login` to manage categories, gallery, services & pricing, booking enquiries, and website settings.
 

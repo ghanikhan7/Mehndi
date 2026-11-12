@@ -2,14 +2,12 @@
   "name": "alfiya-tamboli-mehendi-cms",
   "version": "1.0.0",
   "description": "Alfiya Tamboli – The Mehendi Artist Website & Mini CMS (AlisTech)",
-  "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node server.js"
+    "dev": "node scripts/dev-server.js",
+    "start": "node scripts/dev-server.js"
   },
   "engines": {
     "node": ">=18.0.0"
   },
   "private": true
 }
-

@@ -1,10 +1,10 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
-const apiHandler = require('./api/index');
+const apiHandler = require('../api/index');
 
 const PORT = Number(process.env.PORT) || 8080;
-const ROOT_DIR = process.cwd();
+const ROOT_DIR = path.resolve(__dirname, '..');
 
 const MIME_TYPES = {
   '.html': 'text/html; charset=utf-8',
@@ -38,6 +38,7 @@ const server = http.createServer((req, res) => {
   if (
     pathname.startsWith('/data') ||
     pathname.startsWith('/lib') ||
+    pathname.startsWith('/scripts') ||
     pathname.startsWith('/supabase') ||
     pathname.startsWith('/admin/') ||
     pathname.includes('..') ||
