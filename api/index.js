@@ -70,12 +70,14 @@ function readJsonBody(req, maxBytes = 8 * 1024 * 1024) {
   });
 }
 
-const PROJECT_ROOT = path.resolve(__dirname, '..');
-
-function resolveProjectFile(...segments) {
-  const fromRoot = path.join(PROJECT_ROOT, ...segments);
-  if (fs.existsSync(fromRoot)) return fromRoot;
-  return path.join(process.cwd(), ...segments);
+// Static literal fs.statSync calls so @vercel/nft bundles HTML views and seed data
+try {
+  fs.statSync(path.join(__dirname, '..', 'index.html'));
+  fs.statSync(path.join(__dirname, '..', 'lib', 'views', 'login.html'));
+  fs.statSync(path.join(__dirname, '..', 'lib', 'views', 'admin.html'));
+  fs.statSync(path.join(__dirname, '..', 'data', 'cms-db.json'));
+} catch (_) {
+  // Ignore at build time
 }
 
 module.exports = async function handler(req, res) {
@@ -89,7 +91,7 @@ module.exports = async function handler(req, res) {
     // 0. Public Homepage Fallback (if / or /index.html reaches this function)
     // ========================================================================
     if ((pathname === '/' || pathname === '/index.html') && method === 'GET') {
-      return sendHtmlFile(res, resolveProjectFile('index.html'));
+      return sendHtmlFile(res, path.join(__dirname, '..', 'index.html'));
     }
 
     // ========================================================================
@@ -100,7 +102,7 @@ module.exports = async function handler(req, res) {
       if (admin) {
         return redirect(res, '/admin');
       }
-      return sendHtmlFile(res, resolveProjectFile('lib', 'views', 'login.html'));
+      return sendHtmlFile(res, path.join(__dirname, '..', 'lib', 'views', 'login.html'));
     }
 
     if (pathname === '/admin' && method === 'GET') {
@@ -108,7 +110,7 @@ module.exports = async function handler(req, res) {
       if (!admin) {
         return redirect(res, '/admin/login');
       }
-      return sendHtmlFile(res, resolveProjectFile('lib', 'views', 'admin.html'));
+      return sendHtmlFile(res, path.join(__dirname, '..', 'lib', 'views', 'admin.html'));
     }
 
     // ========================================================================
